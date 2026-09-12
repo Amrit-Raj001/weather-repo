@@ -1,0 +1,2197 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Smart National Weather Intelligence Platform</title>
+
+<style>
+:root{
+    --bg:#f4f7fb;
+    --card:#ffffff;
+    --text:#142033;
+    --muted:#718096;
+    --primary:#1261a0;
+    --primary-dark:#082c52;
+    --border:#e5eaf1;
+    --danger:#dc3545;
+    --warning:#f59e0b;
+    --success:#16a36a;
+    --info:#1683c8;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Inter,Arial,sans-serif;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+}
+
+/* ================= HEADER ================= */
+
+header{
+    height:72px;
+    background:linear-gradient(135deg,#061a36,#0b5b91);
+    color:white;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 28px;
+    position:sticky;
+    top:0;
+    z-index:1000;
+    box-shadow:0 4px 18px rgba(0,0,0,.15);
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.brand-icon{
+    font-size:34px;
+}
+
+.brand h1{
+    font-size:19px;
+}
+
+.brand p{
+    font-size:11px;
+    opacity:.75;
+    margin-top:3px;
+}
+
+.system-status{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+}
+
+.status-dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:#22c77a;
+    box-shadow:0 0 10px #22c77a;
+}
+
+/* ================= LAYOUT ================= */
+
+.layout{
+    display:flex;
+    min-height:calc(100vh - 72px);
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+    width:245px;
+    background:#071b35;
+    color:white;
+    padding:20px 14px;
+    flex-shrink:0;
+}
+
+.nav-label{
+    color:#7690af;
+    font-size:10px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    margin:18px 10px 8px;
+}
+
+.nav{
+    padding:12px 14px;
+    border-radius:8px;
+    margin:4px 0;
+    cursor:pointer;
+    font-size:13px;
+    display:flex;
+    align-items:center;
+    gap:11px;
+    transition:.2s;
+}
+
+.nav:hover,
+.nav.active{
+    background:#1261a0;
+}
+
+/* ================= MAIN ================= */
+
+main{
+    flex:1;
+    padding:25px;
+    overflow:hidden;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+    gap:15px;
+}
+
+.title h2{
+    font-size:26px;
+}
+
+.title p{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:5px;
+}
+
+.live-time{
+    background:white;
+    padding:10px 14px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    font-size:12px;
+}
+
+/* ================= STAT CARDS ================= */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.stat{
+    background:white;
+    padding:18px;
+    border-radius:11px;
+    border:1px solid var(--border);
+    position:relative;
+    overflow:hidden;
+}
+
+.stat::after{
+    content:"";
+    position:absolute;
+    width:55px;
+    height:55px;
+    border-radius:50%;
+    right:-20px;
+    top:-20px;
+    background:#edf6fc;
+}
+
+.stat small{
+    color:var(--muted);
+    text-transform:uppercase;
+    font-size:10px;
+}
+
+.stat h3{
+    font-size:25px;
+    margin-top:7px;
+}
+
+.stat p{
+    font-size:11px;
+    color:var(--success);
+    margin-top:5px;
+}
+
+.stat.critical h3{
+    color:var(--danger);
+}
+
+/* ================= CARDS ================= */
+
+.grid{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:18px;
+    margin-bottom:18px;
+}
+
+.card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:11px;
+    padding:18px;
+}
+
+.card-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.card-head h3{
+    font-size:16px;
+}
+
+.card-head span{
+    font-size:11px;
+    color:var(--muted);
+}
+
+/* ================= INDIA MAP ================= */
+
+.map{
+    height:400px;
+    position:relative;
+    overflow:hidden;
+    border-radius:9px;
+    background:
+        radial-gradient(circle at 20% 30%,rgba(18,97,160,.07),transparent 25%),
+        linear-gradient(135deg,#eaf5fb,#f7fbfe);
+}
+
+.map-grid{
+    position:absolute;
+    inset:0;
+    opacity:.25;
+    background-image:
+        linear-gradient(#9fc3d8 1px,transparent 1px),
+        linear-gradient(90deg,#9fc3d8 1px,transparent 1px);
+    background-size:40px 40px;
+}
+
+.india{
+    position:absolute;
+    width:280px;
+    height:340px;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    background:#d4eaf5;
+    clip-path:polygon(
+        45% 0%,58% 7%,66% 15%,75% 24%,
+        78% 34%,87% 44%,80% 54%,73% 64%,
+        69% 75%,61% 100%,52% 88%,46% 74%,
+        35% 65%,26% 55%,30% 44%,25% 34%,
+        31% 23%,37% 15%
+    );
+    border:3px solid #8ab8d0;
+}
+
+/* map markers */
+
+.marker{
+    position:absolute;
+    width:17px;
+    height:17px;
+    border-radius:50%;
+    border:3px solid white;
+    cursor:pointer;
+    z-index:5;
+    box-shadow:0 0 0 5px rgba(220,53,69,.15);
+    animation:pulse 1.8s infinite;
+}
+
+.marker.critical{
+    background:var(--danger);
+}
+
+.marker.warning{
+    background:var(--warning);
+    box-shadow:0 0 0 5px rgba(245,158,11,.15);
+}
+
+.marker.normal{
+    background:var(--success);
+    box-shadow:0 0 0 5px rgba(22,163,106,.15);
+}
+
+@keyframes pulse{
+    0%{transform:scale(1)}
+    50%{transform:scale(1.15)}
+    100%{transform:scale(1)}
+}
+
+.map-legend{
+    position:absolute;
+    bottom:12px;
+    left:12px;
+    background:white;
+    padding:10px;
+    border-radius:7px;
+    font-size:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+.legend-item{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin:4px 0;
+}
+
+.legend-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+}
+
+.legend-dot.red{background:var(--danger)}
+.legend-dot.yellow{background:var(--warning)}
+.legend-dot.green{background:var(--success)}
+
+/* ================= CRITICAL AREAS ================= */
+
+.critical-list{
+    max-height:400px;
+    overflow-y:auto;
+}
+
+.critical-item{
+    display:flex;
+    gap:10px;
+    padding:13px 8px;
+    border-bottom:1px solid var(--border);
+    cursor:pointer;
+    transition:.2s;
+}
+
+.critical-item:hover{
+    background:#f8fafc;
+}
+
+.severity-dot{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    margin-top:5px;
+    flex-shrink:0;
+}
+
+.severity-dot.red{
+    background:var(--danger);
+    box-shadow:0 0 7px rgba(220,53,69,.5);
+}
+
+.severity-dot.yellow{
+    background:var(--warning);
+}
+
+.area-content{
+    flex:1;
+}
+
+.area-top{
+    display:flex;
+    justify-content:space-between;
+    gap:5px;
+}
+
+.area-name{
+    font-size:13px;
+    font-weight:bold;
+}
+
+.area-state{
+    font-size:10px;
+    color:var(--muted);
+}
+
+.area-event{
+    font-size:12px;
+    margin-top:4px;
+}
+
+.area-reason{
+    color:var(--muted);
+    font-size:10px;
+    margin-top:4px;
+}
+
+.severity{
+    font-size:8px;
+    font-weight:bold;
+    padding:4px 6px;
+    border-radius:12px;
+    height:max-content;
+}
+
+.severity.red{
+    background:#ffe4e7;
+    color:#bd2636;
+}
+
+.severity.yellow{
+    background:#fff1d6;
+    color:#a96800;
+}
+
+/* ================= WEATHER ================= */
+
+.weather-list{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+}
+
+.weather{
+    padding:12px;
+    background:#f8fbfe;
+    border-radius:8px;
+}
+
+.weather-top{
+    display:flex;
+    justify-content:space-between;
+}
+
+.weather-city{
+    font-weight:bold;
+    font-size:13px;
+}
+
+.weather-temp{
+    font-size:20px;
+    font-weight:bold;
+}
+
+.weather-condition{
+    color:var(--muted);
+    font-size:10px;
+    margin-top:4px;
+}
+
+.weather-details{
+    display:flex;
+    justify-content:space-between;
+    margin-top:9px;
+    font-size:10px;
+    color:#65758b;
+}
+
+/* ================= CHARTS ================= */
+
+.chart{
+    height:230px;
+    display:flex;
+    align-items:end;
+    gap:12px;
+    padding:10px 5px 0;
+}
+
+.bar-wrap{
+    flex:1;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:end;
+    align-items:center;
+    gap:5px;
+}
+
+.bar{
+    width:70%;
+    min-height:5px;
+    border-radius:5px 5px 0 0;
+    background:linear-gradient(to top,#1261a0,#50b8e9);
+    transition:.6s;
+}
+
+.bar-value{
+    font-size:9px;
+}
+
+.bar-label{
+    font-size:9px;
+    color:var(--muted);
+}
+
+/* ================= TABLE ================= */
+
+.filters{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+input,select{
+    padding:8px 10px;
+    border:1px solid var(--border);
+    border-radius:7px;
+    outline:none;
+    font-size:11px;
+}
+
+.table-wrapper{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:12px 8px;
+    text-align:left;
+    border-bottom:1px solid var(--border);
+    font-size:11px;
+}
+
+th{
+    color:var(--muted);
+    text-transform:uppercase;
+    font-size:9px;
+}
+
+.badge{
+    padding:4px 7px;
+    border-radius:12px;
+    font-size:8px;
+    font-weight:bold;
+}
+
+.badge.red{
+    background:#ffe4e7;
+    color:#bd2636;
+}
+
+.badge.yellow{
+    background:#fff1d6;
+    color:#a96800;
+}
+
+.badge.green{
+    background:#dcf7e9;
+    color:#137247;
+}
+
+.badge.blue{
+    background:#e1f1fc;
+    color:#1261a0;
+}
+
+/* ================= SOCIAL POSTS ================= */
+
+.posts{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+}
+
+.post{
+    border:1px solid var(--border);
+    border-radius:9px;
+    padding:13px;
+}
+
+.post-header{
+    display:flex;
+    justify-content:space-between;
+    font-size:11px;
+}
+
+.post-user{
+    font-weight:bold;
+}
+
+.post-time{
+    color:var(--muted);
+}
+
+.post-text{
+    font-size:11px;
+    line-height:1.5;
+    margin:9px 0;
+}
+
+.hashtag{
+    color:#1261a0;
+    font-size:10px;
+}
+
+.post-media{
+    margin-top:10px;
+    height:80px;
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(135deg,#dcecf7,#eef7fb);
+    font-size:25px;
+}
+
+/* ================= DATA SOURCES ================= */
+
+.sources{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+}
+
+.source{
+    padding:14px;
+    border:1px solid var(--border);
+    border-radius:8px;
+}
+
+.source-top{
+    display:flex;
+    justify-content:space-between;
+}
+
+.source-name{
+    font-size:12px;
+    font-weight:bold;
+}
+
+.source-count{
+    font-size:22px;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+.online{
+    color:var(--success);
+    font-size:9px;
+    margin-top:4px;
+}
+
+/* ================= BUTTON ================= */
+
+button{
+    border:0;
+    background:var(--primary);
+    color:white;
+    padding:8px 12px;
+    border-radius:7px;
+    cursor:pointer;
+    font-size:10px;
+}
+
+button:hover{
+    background:var(--primary-dark);
+}
+
+/* ================= FOOTER ================= */
+
+footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:10px;
+    padding:25px;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1200px){
+    .stats{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:900px){
+    .sidebar{
+        display:none;
+    }
+
+    .posts,
+    .sources{
+        grid-template-columns:1fr;
+    }
+
+    main{
+        padding:15px;
+    }
+}
+
+@media(max-width:600px){
+    header{
+        padding:0 15px;
+    }
+
+    .brand h1{
+        font-size:14px;
+    }
+
+    .brand p{
+        display:none;
+    }
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .weather-list{
+        grid-template-columns:1fr;
+    }
+
+    .topbar{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+}
+</style>
+</head>
+
+
+<body>
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header>
+
+    <div class="brand">
+
+        <div class="brand-icon">🌦️</div>
+
+        <div>
+            <h1>Smart National Weather Intelligence</h1>
+            <p>Big Data Analytics & Real-Time Weather Monitoring Platform</p>
+        </div>
+
+    </div>
+
+    <div class="system-status">
+        <span class="status-dot"></span>
+        All Systems Operational
+    </div>
+
+</header>
+
+
+<div class="layout">
+
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside class="sidebar">
+
+    <div class="nav-label">Monitoring</div>
+
+    <div class="nav active" onclick="scrollToSection('overview')">
+        📊 Dashboard
+    </div>
+
+    <div class="nav" onclick="scrollToSection('weather')">
+        🌦️ Live Weather
+    </div>
+
+    <div class="nav" onclick="scrollToSection('map')">
+        🇮🇳 India Weather Map
+    </div>
+
+    <div class="nav" onclick="scrollToSection('critical')">
+        🚨 Critical Areas
+    </div>
+
+    <div class="nav-label">Intelligence</div>
+
+    <div class="nav" onclick="scrollToSection('reports')">
+        👥 Citizen Reports
+    </div>
+
+    <div class="nav" onclick="scrollToSection('social')">
+        #️⃣ Social Media
+    </div>
+
+    <div class="nav" onclick="scrollToSection('analytics')">
+        📈 Analytics
+    </div>
+
+    <div class="nav-label">Infrastructure</div>
+
+    <div class="nav" onclick="scrollToSection('sources')">
+        📡 Data Sources
+    </div>
+
+</aside>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main id="overview">
+
+
+<!-- PAGE TITLE -->
+
+<div class="topbar">
+
+    <div class="title">
+        <h2>National Weather Overview</h2>
+        <p>
+            Real-time weather intelligence, event detection and
+            critical-area monitoring across India.
+        </p>
+    </div>
+
+    <div class="live-time">
+        🕐 <span id="clock">Loading...</span>
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     STATISTICS
+========================================================= -->
+
+<section class="stats">
+
+    <div class="stat">
+        <small>Total Records</small>
+        <h3 id="records">1,284,562</h3>
+        <p>↑ Live ingestion</p>
+    </div>
+
+    <div class="stat">
+        <small>Weather Events</small>
+        <h3 id="eventCount">37</h3>
+        <p>↑ 4 new events</p>
+    </div>
+
+    <div class="stat critical">
+        <small>Critical Areas</small>
+        <h3 id="criticalCount">06</h3>
+        <p>Immediate monitoring</p>
+    </div>
+
+    <div class="stat">
+        <small>Citizen Reports</small>
+        <h3>197,620</h3>
+        <p>↑ 8.2% today</p>
+    </div>
+
+    <div class="stat">
+        <small>Cities Monitored</small>
+        <h3>482</h3>
+        <p>Across India</p>
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     MAP + CRITICAL AREAS
+========================================================= -->
+
+<section class="grid">
+
+    <!-- INDIA MAP -->
+
+    <div class="card" id="map">
+
+        <div class="card-head">
+
+            <div>
+                <h3>🇮🇳 Real-Time India Weather Event Map</h3>
+                <span>Automatically classified by severity</span>
+            </div>
+
+            <button onclick="refreshSystem()">
+                ↻ Refresh
+            </button>
+
+        </div>
+
+
+        <div class="map">
+
+            <div class="map-grid"></div>
+
+            <div class="india"></div>
+
+
+            <!-- CRITICAL MARKERS -->
+
+            <div class="marker critical"
+                 style="left:53%;top:40%;"
+                 title="Delhi NCR — Critical"></div>
+
+            <div class="marker critical"
+                 style="left:44%;top:61%;"
+                 title="Mumbai — Critical"></div>
+
+            <div class="marker critical"
+                 style="left:63%;top:53%;"
+                 title="Kolkata — Critical"></div>
+
+            <div class="marker critical"
+                 style="left:57%;top:67%;"
+                 title="Patna — Critical"></div>
+
+            <div class="marker warning"
+                 style="left:50%;top:28%;"
+                 title="Chandigarh — Warning"></div>
+
+            <div class="marker warning"
+                 style="left:49%;top:74%;"
+                 title="Bengaluru — Warning"></div>
+
+            <div class="marker normal"
+                 style="left:42%;top:76%;"
+                 title="Goa — Normal"></div>
+
+
+            <!-- LEGEND -->
+
+            <div class="map-legend">
+
+                <div class="legend-item">
+                    <span class="legend-dot red"></span>
+                    Critical Area
+                </div>
+
+                <div class="legend-item">
+                    <span class="legend-dot yellow"></span>
+                    Warning Area
+                </div>
+
+                <div class="legend-item">
+                    <span class="legend-dot green"></span>
+                    Normal
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CRITICAL AREAS -->
+
+    <div class="card" id="critical">
+
+        <div class="card-head">
+
+            <div>
+                <h3>🚨 Critical Areas</h3>
+                <span>AI severity classification</span>
+            </div>
+
+            <span id="criticalHeader">
+                06 Critical
+            </span>
+
+        </div>
+
+
+        <div class="critical-list" id="criticalList">
+
+
+            <!-- DELHI -->
+
+            <div class="critical-item">
+
+                <span class="severity-dot red"></span>
+
+                <div class="area-content">
+
+                    <div class="area-top">
+
+                        <div>
+                            <div class="area-name">
+                                Delhi NCR
+                            </div>
+
+                            <div class="area-state">
+                                Delhi
+                            </div>
+                        </div>
+
+                        <span class="severity red">
+                            CRITICAL
+                        </span>
+
+                    </div>
+
+                    <div class="area-event">
+                        🌧️ Extreme Rainfall
+                    </div>
+
+                    <div class="area-reason">
+                        Rainfall intensity above critical threshold
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- MUMBAI -->
+
+            <div class="critical-item">
+
+                <span class="severity-dot red"></span>
+
+                <div class="area-content">
+
+                    <div class="area-top">
+
+                        <div>
+                            <div class="area-name">
+                                Mumbai
+                            </div>
+
+                            <div class="area-state">
+                                Maharashtra
+                            </div>
+                        </div>
+
+                        <span class="severity red">
+                            CRITICAL
+                        </span>
+
+                    </div>
+
+                    <div class="area-event">
+                        🌊 Flood Risk
+                    </div>
+
+                    <div class="area-reason">
+                        Heavy rainfall + rising water level
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- KOLKATA -->
+
+            <div class="critical-item">
+
+                <span class="severity-dot red"></span>
+
+                <div class="area-content">
+
+                    <div class="area-top">
+
+                        <div>
+                            <div class="area-name">
+                                Kolkata
+                            </div>
+
+                            <div class="area-state">
+                                West Bengal
+                            </div>
+                        </div>
+
+                        <span class="severity red">
+                            CRITICAL
+                        </span>
+
+                    </div>
+
+                    <div class="area-event">
+                        ⛈️ Severe Thunderstorm
+                    </div>
+
+                    <div class="area-reason">
+                        Strong wind + lightning activity detected
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PATNA -->
+
+            <div class="critical-item">
+
+                <span class="severity-dot red"></span>
+
+                <div class="area-content">
+
+                    <div class="area-top">
+
+                        <div>
+                            <div class="area-name">
+                                Patna
+                            </div>
+
+                            <div class="area-state">
+                                Bihar
+                            </div>
+                        </div>
+
+                        <span class="severity red">
+                            CRITICAL
+                        </span>
+
+                    </div>
+
+                    <div class="area-event">
+                        🌧️ Heavy Rainfall
+                    </div>
+
+                    <div class="area-reason">
+                        Continuous rainfall reported by multiple sources
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- GUWAHATI -->
+
+            <div class="critical-item">
+
+                <span class="severity-dot red"></span>
+
+                <div class="area-content">
+
+                    <div class="area-top">
+
+                        <div>
+                            <div class="area-name">
+                                Guwahati
+                            </div>
+
+                            <div class="area-state">
+                                Assam
+                            </div>
+                        </div>
+
+                        <span class="severity red">
+                            CRITICAL
+                        </span>
+
+                    </div>
+
+                    <div class="area-event">
+                        🌊 Flood Risk
+                    </div>
+
+                    <div class="area-reason">
+                        Flood-prone zone + rising water level
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- JAIPUR -->
+
+            <div class="critical-item">
+
+                <span class="severity-dot yellow"></span>
+
+                <div class="area-content">
+
+                    <div class="area-top">
+
+                        <div>
+                            <div class="area-name">
+                                Jaipur
+                            </div>
+
+                            <div class="area-state">
+                                Rajasthan
+                            </div>
+                        </div>
+
+                        <span class="severity yellow">
+                            WARNING
+                        </span>
+
+                    </div>
+
+                    <div class="area-event">
+                        🌡️ Heat Warning
+                    </div>
+
+                    <div class="area-reason">
+                        High temperature conditions
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     LIVE WEATHER
+========================================================= -->
+
+<section class="card" id="weather">
+
+    <div class="card-head">
+
+        <div>
+            <h3>🌦️ Live Weather Conditions</h3>
+            <span>Major monitored locations</span>
+        </div>
+
+        <select onchange="filterWeather(this.value)">
+
+            <option value="all">All Cities</option>
+            <option value="critical">Critical</option>
+            <option value="warning">Warning</option>
+            <option value="normal">Normal</option>
+
+        </select>
+
+    </div>
+
+
+    <div class="weather-list" id="weatherList">
+
+        <div class="weather" data-level="critical">
+            <div class="weather-top">
+                <span class="weather-city">Delhi NCR</span>
+                <span class="weather-temp">27°C</span>
+            </div>
+            <div class="weather-condition">🌧️ Extreme Rainfall</div>
+            <div class="weather-details">
+                <span>💧 91%</span>
+                <span>🌧️ 142 mm</span>
+                <span>💨 31 km/h</span>
+            </div>
+        </div>
+
+
+        <div class="weather" data-level="critical">
+            <div class="weather-top">
+                <span class="weather-city">Mumbai</span>
+                <span class="weather-temp">29°C</span>
+            </div>
+            <div class="weather-condition">🌊 Flood Risk</div>
+            <div class="weather-details">
+                <span>💧 94%</span>
+                <span>🌧️ 168 mm</span>
+                <span>💨 28 km/h</span>
+            </div>
+        </div>
+
+
+        <div class="weather" data-level="critical">
+            <div class="weather-top">
+                <span class="weather-city">Kolkata</span>
+                <span class="weather-temp">30°C</span>
+            </div>
+            <div class="weather-condition">⛈️ Thunderstorm</div>
+            <div class="weather-details">
+                <span>💧 88%</span>
+                <span>🌧️ 91 mm</span>
+                <span>💨 52 km/h</span>
+            </div>
+        </div>
+
+
+        <div class="weather" data-level="critical">
+            <div class="weather-top">
+                <span class="weather-city">Patna</span>
+                <span class="weather-temp">28°C</span>
+            </div>
+            <div class="weather-condition">🌧️ Heavy Rain</div>
+            <div class="weather-details">
+                <span>💧 93%</span>
+                <span>🌧️ 117 mm</span>
+                <span>💨 25 km/h</span>
+            </div>
+        </div>
+
+
+        <div class="weather" data-level="warning">
+            <div class="weather-top">
+                <span class="weather-city">Jaipur</span>
+                <span class="weather-temp">41°C</span>
+            </div>
+            <div class="weather-condition">🌡️ Heat Warning</div>
+            <div class="weather-details">
+                <span>💧 31%</span>
+                <span>🌧️ 0 mm</span>
+                <span>💨 19 km/h</span>
+            </div>
+        </div>
+
+
+        <div class="weather" data-level="normal">
+            <div class="weather-top">
+                <span class="weather-city">Bengaluru</span>
+                <span class="weather-temp">24°C</span>
+            </div>
+            <div class="weather-condition">☁️ Cloudy</div>
+            <div class="weather-details">
+                <span>💧 73%</span>
+                <span>🌧️ 8 mm</span>
+                <span>💨 14 km/h</span>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+<br>
+
+
+<!-- =========================================================
+     ANALYTICS
+========================================================= -->
+
+<section class="grid" id="analytics">
+
+
+    <!-- RAINFALL -->
+
+    <div class="card">
+
+        <div class="card-head">
+            <div>
+                <h3>📊 Rainfall Intensity by Region</h3>
+                <span>Current monitored rainfall</span>
+            </div>
+
+            <select onchange="changeChart(this.value)">
+                <option value="rain">Rainfall</option>
+                <option value="temperature">Temperature</option>
+                <option value="humidity">Humidity</option>
+                <option value="wind">Wind</option>
+            </select>
+
+        </div>
+
+
+        <div class="chart" id="chart">
+
+            <div class="bar-wrap">
+                <span class="bar-value">142</span>
+                <div class="bar" style="height:88%"></div>
+                <span class="bar-label">Delhi</span>
+            </div>
+
+            <div class="bar-wrap">
+                <span class="bar-value">168</span>
+                <div class="bar" style="height:100%"></div>
+                <span class="bar-label">Mumbai</span>
+            </div>
+
+            <div class="bar-wrap">
+                <span class="bar-value">91</span>
+                <div class="bar" style="height:55%"></div>
+                <span class="bar-label">Kolkata</span>
+            </div>
+
+            <div class="bar-wrap">
+                <span class="bar-value">117</span>
+                <div class="bar" style="height:70%"></div>
+                <span class="bar-label">Patna</span>
+            </div>
+
+            <div class="bar-wrap">
+                <span class="bar-value">8</span>
+                <div class="bar" style="height:10%"></div>
+                <span class="bar-label">Bengaluru</span>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ALERT SUMMARY -->
+
+    <div class="card">
+
+        <div class="card-head">
+            <h3>🚨 Alert Summary</h3>
+            <span>Current system</span>
+        </div>
+
+        <div class="critical-item">
+            <span class="severity-dot red"></span>
+
+            <div class="area-content">
+                <div class="area-name">
+                    Extreme Rainfall
+                </div>
+                <div class="area-reason">
+                    03 locations
+                </div>
+            </div>
+
+            <span class="severity red">HIGH</span>
+        </div>
+
+
+        <div class="critical-item">
+            <span class="severity-dot red"></span>
+
+            <div class="area-content">
+                <div class="area-name">
+                    Flood Risk
+                </div>
+                <div class="area-reason">
+                    02 locations
+                </div>
+            </div>
+
+            <span class="severity red">HIGH</span>
+        </div>
+
+
+        <div class="critical-item">
+            <span class="severity-dot yellow"></span>
+
+            <div class="area-content">
+                <div class="area-name">
+                    Heat Warning
+                </div>
+                <div class="area-reason">
+                    01 location
+                </div>
+            </div>
+
+            <span class="severity yellow">MEDIUM</span>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     CITIZEN REPORTS
+========================================================= -->
+
+<section class="card" id="reports">
+
+    <div class="card-head">
+
+        <div>
+            <h3>👥 Citizen Weather Reports</h3>
+            <span>Reports collected from public sources</span>
+        </div>
+
+        <div class="filters">
+
+            <input
+                id="search"
+                type="text"
+                placeholder="Search city..."
+                onkeyup="filterReports()"
+            >
+
+            <select id="reportType" onchange="filterReports()">
+
+                <option value="all">All Events</option>
+                <option value="rain">Rain</option>
+                <option value="flood">Flood</option>
+                <option value="storm">Storm</option>
+                <option value="heat">Heat</option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Date & Time</th>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>GPS</th>
+                    <th>Event</th>
+                    <th>Source</th>
+                    <th>Status</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody id="reportTable">
+
+                <tr data-city="Delhi" data-type="rain">
+                    <td>13 Sep 2026 20:41</td>
+                    <td>Delhi</td>
+                    <td>Delhi</td>
+                    <td>28.61, 77.20</td>
+                    <td>🌧️ Heavy Rain</td>
+                    <td>#IMD</td>
+                    <td><span class="badge red">Critical</span></td>
+                </tr>
+
+
+                <tr data-city="Mumbai" data-type="flood">
+                    <td>13 Sep 2026 20:34</td>
+                    <td>Mumbai</td>
+                    <td>Maharashtra</td>
+                    <td>19.07, 72.87</td>
+                    <td>🌊 Flood</td>
+                    <td>Citizen</td>
+                    <td><span class="badge red">Critical</span></td>
+                </tr>
+
+
+                <tr data-city="Kolkata" data-type="storm">
+                    <td>13 Sep 2026 20:28</td>
+                    <td>Kolkata</td>
+                    <td>West Bengal</td>
+                    <td>22.57, 88.36</td>
+                    <td>⛈️ Storm</td>
+                    <td>Social Media</td>
+                    <td><span class="badge red">Critical</span></td>
+                </tr>
+
+
+                <tr data-city="Patna" data-type="rain">
+                    <td>13 Sep 2026 20:17</td>
+                    <td>Patna</td>
+                    <td>Bihar</td>
+                    <td>25.59, 85.13</td>
+                    <td>🌧️ Rain</td>
+                    <td>#IMD</td>
+                    <td><span class="badge blue">Verified</span></td>
+                </tr>
+
+
+                <tr data-city="Jaipur" data-type="heat">
+                    <td>13 Sep 2026 20:05</td>
+                    <td>Jaipur</td>
+                    <td>Rajasthan</td>
+                    <td>26.91, 75.78</td>
+                    <td>🌡️ Heat</td>
+                    <td>Citizen</td>
+                    <td><span class="badge yellow">Warning</span></td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+<br>
+
+
+<!-- =========================================================
+     SOCIAL MEDIA
+========================================================= -->
+
+<section class="card" id="social">
+
+    <div class="card-head">
+
+        <div>
+            <h3>#️⃣ Weather Social Intelligence</h3>
+            <span>Weather-related posts and hashtags</span>
+        </div>
+
+        <span>Live stream</span>
+
+    </div>
+
+
+    <div class="posts">
+
+        <div class="post">
+
+            <div class="post-header">
+                <span class="post-user">Citizen_001</span>
+                <span class="post-time">2 min ago</span>
+            </div>
+
+            <div class="post-text">
+                Heavy rainfall reported in multiple areas of Delhi NCR.
+            </div>
+
+            <div class="hashtag">
+                #IMD #DelhiRain #WeatherAlert
+            </div>
+
+            <div class="post-media">
+                📸
+            </div>
+
+        </div>
+
+
+        <div class="post">
+
+            <div class="post-header">
+                <span class="post-user">WeatherWatch</span>
+                <span class="post-time">5 min ago</span>
+            </div>
+
+            <div class="post-text">
+                Water levels are increasing in low-lying areas of Mumbai.
+            </div>
+
+            <div class="hashtag">
+                #MumbaiRain #FloodAlert #IMD
+            </div>
+
+            <div class="post-media">
+                🎥
+            </div>
+
+        </div>
+
+
+        <div class="post">
+
+            <div class="post-header">
+                <span class="post-user">StormTracker</span>
+                <span class="post-time">8 min ago</span>
+            </div>
+
+            <div class="post-text">
+                Thunderstorm activity detected around Kolkata.
+            </div>
+
+            <div class="hashtag">
+                #Thunderstorm #Kolkata #Weather
+            </div>
+
+            <div class="post-media">
+                📸
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<br>
+
+
+<!-- =========================================================
+     DATA SOURCES
+========================================================= -->
+
+<section class="card" id="sources">
+
+    <div class="card-head">
+
+        <div>
+            <h3>📡 Data Source Monitoring</h3>
+            <span>Multi-source weather ingestion</span>
+        </div>
+
+        <span>6 active sources</span>
+
+    </div>
+
+
+    <div class="sources">
+
+        <div class="source">
+
+            <div class="source-top">
+                <span class="source-name">🏛️ Government APIs</span>
+                <span class="badge green">ONLINE</span>
+            </div>
+
+            <div class="source-count">
+                425,812
+            </div>
+
+            <div class="online">
+                ● Receiving data
+            </div>
+
+        </div>
+
+
+        <div class="source">
+
+            <div class="source-top">
+                <span class="source-name">#️⃣ Social Media</span>
+                <span class="badge green">ONLINE</span>
+            </div>
+
+            <div class="source-count">
+                382,941
+            </div>
+
+            <div class="online">
+                ● Hashtag monitoring
+            </div>
+
+        </div>
+
+
+        <div class="source">
+
+            <div class="source-top">
+                <span class="source-name">👥 Citizen Reports</span>
+                <span class="badge green">ONLINE</span>
+            </div>
+
+            <div class="source-count">
+                197,620
+            </div>
+
+            <div class="online">
+                ● Reports processing
+            </div>
+
+        </div>
+
+
+        <div class="source">
+
+            <div class="source-top">
+                <span class="source-name">📰 News Sources</span>
+                <span class="badge green">ONLINE</span>
+            </div>
+
+            <div class="source-count">
+                82,741
+            </div>
+
+            <div class="online">
+                ● Monitoring
+            </div>
+
+        </div>
+
+
+        <div class="source">
+
+            <div class="source-top">
+                <span class="source-name">🌐 Public Datasets</span>
+                <span class="badge green">ONLINE</span>
+            </div>
+
+            <div class="source-count">
+                156,782
+            </div>
+
+            <div class="online">
+                ● Synchronizing
+            </div>
+
+        </div>
+
+
+        <div class="source">
+
+            <div class="source-top">
+                <span class="source-name">📱 Mobile Reports</span>
+                <span class="badge green">ONLINE</span>
+            </div>
+
+            <div class="source-count">
+                38,666
+            </div>
+
+            <div class="online">
+                ● Upload processing
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<footer>
+
+    Smart National Weather Intelligence Platform © 2026
+    <br><br>
+    Big Data Analytics • Weather Intelligence • Citizen Science •
+    Geographic Monitoring • Real-Time Event Detection
+
+</footer>
+
+</main>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   LIVE CLOCK
+========================================================= */
+
+function updateClock(){
+
+    const now = new Date();
+
+    document.getElementById("clock").textContent =
+        now.toLocaleDateString("en-IN") +
+        " • " +
+        now.toLocaleTimeString("en-IN");
+
+}
+
+updateClock();
+
+setInterval(updateClock,1000);
+
+
+/* =========================================================
+   LIVE DATA COUNTER
+========================================================= */
+
+let records = 1284562;
+
+setInterval(()=>{
+
+    records += Math.floor(Math.random()*12)+1;
+
+    document.getElementById("records").textContent =
+        records.toLocaleString();
+
+},2500);
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function scrollToSection(id){
+
+    const element = document.getElementById(id);
+
+    if(element){
+
+        element.scrollIntoView({
+            behavior:"smooth",
+            block:"start"
+        });
+
+    }
+
+}
+
+
+/* =========================================================
+   WEATHER FILTER
+========================================================= */
+
+function filterWeather(level){
+
+    const cards =
+        document.querySelectorAll(".weather");
+
+    cards.forEach(card=>{
+
+        if(level === "all"){
+            card.style.display="";
+        }
+
+        else if(card.dataset.level === level){
+            card.style.display="";
+        }
+
+        else{
+            card.style.display="none";
+        }
+
+    });
+
+}
+
+
+/* =========================================================
+   CITIZEN REPORT FILTER
+========================================================= */
+
+function filterReports(){
+
+    const search =
+        document.getElementById("search")
+        .value
+        .toLowerCase();
+
+    const type =
+        document.getElementById("reportType")
+        .value;
+
+    const rows =
+        document.querySelectorAll("#reportTable tr");
+
+    rows.forEach(row=>{
+
+        const city =
+            row.dataset.city.toLowerCase();
+
+        const eventType =
+            row.dataset.type;
+
+        const cityMatch =
+            city.includes(search);
+
+        const typeMatch =
+            type === "all" ||
+            eventType === type;
+
+        row.style.display =
+            cityMatch && typeMatch
+            ? ""
+            : "none";
+
+    });
+
+}
+
+
+/* =========================================================
+   ANALYTICS CHART
+========================================================= */
+
+const chartData = {
+
+    rain:{
+        values:[142,168,91,117,8],
+        heights:[88,100,55,70,10]
+    },
+
+    temperature:{
+        values:[27,29,30,28,24],
+        heights:[70,76,80,74,60]
+    },
+
+    humidity:{
+        values:[91,94,88,93,73],
+        heights:[91,94,88,93,73]
+    },
+
+    wind:{
+        values:[31,28,52,25,14],
+        heights:[60,54,100,48,27]
+    }
+
+};
+
+
+function changeChart(type){
+
+    const data =
+        chartData[type];
+
+    const bars =
+        document.querySelectorAll("#chart .bar");
+
+    const values =
+        document.querySelectorAll("#chart .bar-value");
+
+    bars.forEach((bar,index)=>{
+
+        bar.style.height =
+            data.heights[index] + "%";
+
+    });
+
+    values.forEach((value,index)=>{
+
+        value.textContent =
+            data.values[index];
+
+    });
+
+}
+
+
+/* =========================================================
+   SIMULATED SYSTEM REFRESH
+========================================================= */
+
+function refreshSystem(){
+
+    const button =
+        event.target;
+
+    button.textContent =
+        "Refreshing...";
+
+    setTimeout(()=>{
+
+        button.textContent =
+            "✓ Updated";
+
+        setTimeout(()=>{
+
+            button.textContent =
+                "↻ Refresh";
+
+        },1200);
+
+    },900);
+
+}
+
+
+/* =========================================================
+   CRITICAL AREA DETECTION ENGINE
+========================================================= */
+
+/*
+    This demonstrates the frontend logic.
+
+    Production version:
+    Weather API / IMD / sensors / citizen reports
+                       ↓
+                  Data pipeline
+                       ↓
+                Severity engine
+                       ↓
+               Critical area list
+*/
+
+function calculateSeverity(weather){
+
+    let score = 0;
+
+    /* Rainfall */
+
+    if(weather.rainfall >= 150){
+        score += 50;
+    }
+
+    else if(weather.rainfall >= 100){
+        score += 35;
+    }
+
+    else if(weather.rainfall >= 50){
+        score += 20;
+    }
+
+
+    /* Temperature */
+
+    if(weather.temperature >= 45){
+        score += 50;
+    }
+
+    else if(weather.temperature >= 40){
+        score += 30;
+    }
+
+
+    /* Wind */
+
+    if(weather.wind >= 60){
+        score += 35;
+    }
+
+    else if(weather.wind >= 40){
+        score += 20;
+    }
+
+
+    /* Humidity + rain */
+
+    if(
+        weather.humidity >= 90 &&
+        weather.rainfall >= 100
+    ){
+        score += 20;
+    }
+
+
+    /* Classification */
+
+    if(score >= 70){
+        return "CRITICAL";
+    }
+
+    if(score >= 35){
+        return "WARNING";
+    }
+
+    return "NORMAL";
+
+}
+
+
+/* Example weather event */
+
+const sampleEvent = {
+
+    city:"Mumbai",
+
+    state:"Maharashtra",
+
+    temperature:29,
+
+    rainfall:168,
+
+    humidity:94,
+
+    wind:28
+
+};
+
+
+/* Automatically classify */
+
+console.log(
+    sampleEvent.city +
+    " severity:",
+    calculateSeverity(sampleEvent)
+);
+
+
+/* =========================================================
+   SIMULATED LIVE UPDATE
+========================================================= */
+
+setInterval(()=>{
+
+    const eventCount =
+        document.getElementById("eventCount");
+
+    let value =
+        parseInt(eventCount.textContent);
+
+    if(Math.random() > .75){
+
+        value++;
+
+        eventCount.textContent =
+            value;
+
+    }
+
+},7000);
+
+</script>
+
+</body>
+</html>
+
